@@ -18,18 +18,57 @@ router.get("/", async function (req, res, next) {
     }
   });
 
-router.get("/:code", async function(req, res, next){
 
-try{
-    const code = req.params.code;
-    const results = await db.query(
-        `SELECT code, name, description FROM companies WHERE code = $1`, [code]
-    )
-    return res.json({"company": results.rows[0]})
+// router.get("/:code", async function(req, res, next){
 
-} catch(err) {
-    return next(err);
-}
+// try{
+//     const code = req.params.code;
+//     const results = await db.query(
+//         `SELECT code, name, description FROM companies WHERE code = $1`, [code]
+//     )
+//     return res.json({"company": results.rows[0]})
+
+// } catch(err) {
+//     return next(err);
+// }
+// });
+
+router.get('/:code', async function(req, res, next){
+    try{
+        const { code } = req.params;
+
+        const computersRes = await db.query(
+            `SELECT code, name, description
+             FROM companies
+             WHERE code = $1`,
+          [code]
+      );
+  
+      const invoicesRes = await db.query(
+            `SELECT id
+             FROM invoices
+             WHERE comp_code = $1`,
+          [code]
+      );
+
+        if (computersRes.rows.length == 0) {
+            throw new expressError(`${code} COMPANY NOT FOUND`, 404)
+          } else {
+
+            const company = computersRes.rows[0];
+            const invoices = invoicesRes.rows;
+
+            company.invoices = invoices.map(inv => inv.id);
+            //to create {company:code,name, description, invoices: [id,,,]}
+            
+            return res.json({"company": company });
+          }
+
+    } catch(err) {
+        next(err)
+    }
+
+
 });
 
 
@@ -92,3 +131,5 @@ router.put("/:code", async function(req, res, next){
 
 
 module.exports = router;
+
+
