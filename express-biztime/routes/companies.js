@@ -2,6 +2,7 @@ const db = require("../db");
 const express = require("express");
 const expressError = require("../expressError");
 const router = express.Router();
+const slugify = require("slugify");
 
 router.get("/", async function (req, res, next) {
     try {
@@ -75,9 +76,21 @@ router.get('/:code', async function(req, res, next){
 router.post("/", async function(req, res, next){
 
 try{
-    const { code, name, description } = req.body;
+    const { name, description } = req.body;
+
+    let code = slugify(name, {
+      // replacement: '-',  // replace spaces with replacement character, defaults to `-`
+      // remove: undefined, // remove characters that match regex, defaults to `undefined`
+      // lower: false,      // convert to lower case, defaults to `false`
+      // strict: false,     // strip special characters except replacement, defaults to `false`
+      // locale: 'vi',       // language code of the locale to use
+      // trim: true         // trim leading and trailing replacement chars, defaults to `true`
+    });
+
     const results = await db.query(
-        `INSERT INTO companies (code, name, description) VALUES ($1,$2,$3) RETURNING code, name, description`, [code, name, description]
+        `INSERT INTO companies (code, name, description) 
+        VALUES ($1,$2,$3) 
+        RETURNING code, name, description`, [code, name, description]
     )
     return res.json({"company": results.rows[0]})
 
