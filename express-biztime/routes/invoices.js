@@ -63,12 +63,37 @@ router.put("/:id", async function(req, res, next){
 
     try{
         const { id }  = req.params;
-        const { amt } = req.body;
+        const { amt, paid } = req.body;
+        let paidDate = null;
+
+        const paidStatus = await db.query(
+          `SELECT paid, amt, paid_date 
+          FROM invoices 
+          WHERE id=$1`, [id]
+        )
+
+        if (paidStatus.rows.length === 0) {
+          throw new ExpressError(`Invoice #${id} not found`, 404);
+        }
+
+        currentPaidDate = paidStatus.rows[0].paid_date;
+        console.log("currentPaidDate", currentPaidDate);
+
+        // If paying unpaid invoice: sets paid_date to todaysets paid_date to today       
+        if (!currentPaidDate && paid) {
+          paidDate = new Date();
+          // If un-paying: sets paid_date to null
+        } else if (!paid) {
+          paidDate = null
+          // Else: keep current paid_date
+        } else {
+          paidDate = currentPaidDate;
+        }
 
         const results = await db.query(
             `UPDATE invoices 
-            SET amt=$1 WHERE id = $2 
-            RETURNING id, comp_code, amt, paid, add_date, paid_date`, [amt, id]
+            SET amt=$1, paid_date=$2, paid=$3 WHERE id = $4 
+            RETURNING id, comp_code, amt, paid, add_date, paid_date`, [amt, paidDate, paid, id]
         );
 
         if (results.rows.length == 0) {
