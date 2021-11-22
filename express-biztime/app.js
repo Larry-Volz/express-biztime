@@ -16,7 +16,7 @@ const cRoutes = require("./routes/companies");
 app.use("/companies", cRoutes);
 
 const indRoutes = require("./routes/industries");
-app.use("/companies", cRoutes);
+app.use("/industries", indRoutes);
 
 
 

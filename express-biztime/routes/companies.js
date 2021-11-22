@@ -52,17 +52,12 @@ router.get('/:code', async function(req, res, next){
           [code]
       );
 
-
-       
-
         if (computersRes.rows.length == 0) {
             throw new expressError(`${code} COMPANY NOT FOUND`, 404)
           } else {
 
             const company = computersRes.rows[0];
             const invoices = invoicesRes.rows;
-
-
 
 
             const industList = await db.query(
