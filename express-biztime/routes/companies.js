@@ -52,12 +52,31 @@ router.get('/:code', async function(req, res, next){
           [code]
       );
 
+
+       
+
         if (computersRes.rows.length == 0) {
             throw new expressError(`${code} COMPANY NOT FOUND`, 404)
           } else {
 
             const company = computersRes.rows[0];
             const invoices = invoicesRes.rows;
+
+
+
+
+            const industList = await db.query(
+              `SELECT indust_code, comp_code, industry_name
+              FROM industry_company
+              JOIN industries
+              ON code=indust_code
+              WHERE comp_code = $1`, [code]
+            )
+
+            const industries = industList.rows;
+            company.industries = industries.map(ind => ind.industry_name)
+
+
 
             company.invoices = invoices.map(inv => inv.id);
             //to create {company:code,name, description, invoices: [id,,,]}

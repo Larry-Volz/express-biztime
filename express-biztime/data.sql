@@ -11,7 +11,7 @@ CREATE TABLE companies (
 
 CREATE TABLE industries (
     code text PRIMARY KEY,
-    industry text NOT NULL UNIQUE
+    industry_name text NOT NULL UNIQUE
 );
 
 CREATE TABLE industry_company (
@@ -34,7 +34,7 @@ INSERT INTO companies
   VALUES ('apple', 'Apple Computer', 'Maker of OSX.'),
          ('ibm', 'IBM', 'Big blue.');
 
-INSERT INTO industries (code, industry)
+INSERT INTO industries (code, industry_name)
   VALUES ('act','accounting'),
          ('ent','entertainment'),
          ('hr','human resources');
