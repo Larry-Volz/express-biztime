@@ -20,20 +20,6 @@ router.get("/", async function (req, res, next) {
   });
 
 
-// router.get("/:code", async function(req, res, next){
-
-// try{
-//     const code = req.params.code;
-//     const results = await db.query(
-//         `SELECT code, name, description FROM companies WHERE code = $1`, [code]
-//     )
-//     return res.json({"company": results.rows[0]})
-
-// } catch(err) {
-//     return next(err);
-// }
-// });
-
 router.get('/:code', async function(req, res, next){
     try{
         const { code } = req.params;

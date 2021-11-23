@@ -4,34 +4,34 @@ const expressError = require("../expressError");
 const router = express.Router();
 
 
-//GET all industries - show company codes for each
 
+/**GET all industries - show company codes for each */
 router.get("/", async function (req, res, next) {
     try {
-    //1st just get the industry codes - then get the companies that have them and add to object
-      const industries = await db.query(
-            `SELECT code, industry_name
-            FROM industries 
-            ORDER BY code`);
+        //1st just get the industry codes - then get the companies that have them and add to object
+        const industries = await db.query(
+                `SELECT code, industry_name
+                FROM industries 
+                ORDER BY code`);
 
-    const companies = await db.query(
-        `SELECT comp_code, indust_code
-            FROM industry_company`);
+        const companies = await db.query(
+            `SELECT comp_code, indust_code
+                FROM industry_company`);
 
     
-    for (idx in industries.rows){
-        let currIndustries = new Set;       
-        for (company of companies.rows){
-            console.log("company", company);
-            if (industries.rows[idx].code == company.indust_code){
-                currIndustries.add(company.comp_code);
+        for (idx in industries.rows){
+            let currIndustries = new Set;       
+            for (company of companies.rows){
+                console.log("company", company);
+                if (industries.rows[idx].code == company.indust_code){
+                    currIndustries.add(company.comp_code);
+                }
             }
-        }
 
         currIndustries = Array.from(currIndustries);
         industries.rows[idx].companies = currIndustries
     }
-      return res.json({'industries' : industries.rows});
+      return res.status(201).json({'industries' : industries.rows});
     }
   
     catch (err) {
@@ -39,8 +39,8 @@ router.get("/", async function (req, res, next) {
     }
   });
 
-//POST a new industry
-router.post('/', async function(req, res, next){
+/**POST a new industry*/
+  router.post('/', async function(req, res, next){
     try{
 
         //get code, industry_name from req
@@ -67,7 +67,7 @@ router.post('/', async function(req, res, next){
  * - check/prevent duplication
 */
 
-//make route /:company
+/**Associate a company with an industry.  */
 router.post('/:company', async function(req, res, next){
     try{
         //get industry from body
