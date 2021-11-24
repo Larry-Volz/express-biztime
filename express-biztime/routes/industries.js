@@ -31,7 +31,7 @@ router.get("/", async function (req, res, next) {
         currIndustries = Array.from(currIndustries);
         industries.rows[idx].companies = currIndustries
     }
-      return res.status(201).json({'industries' : industries.rows});
+      return res.status(200).json({'industries' : industries.rows});
     }
   
     catch (err) {
@@ -53,7 +53,7 @@ router.get("/", async function (req, res, next) {
             VALUES ($1,$2) 
             RETURNING code, industry_name`, [code, industry_name]
             )
-    return res.json({"industry": results.rows[0]})
+    return res.status(201).json({"industry": results.rows[0]})
 
     } catch(err){
         next(err);
@@ -87,7 +87,7 @@ router.post('/:company', async function(req, res, next){
         if (results.rows.length == 0) {
             throw new expressError(`${code} COMPANY NOT FOUND OR UPDATED`, 404)
           } else {
-            return res.json({"company": results.rows[0]});
+            return res.status(201).json({"company": results.rows[0]});
           }
 
     } catch(err) {
